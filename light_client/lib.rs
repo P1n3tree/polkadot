@@ -88,7 +88,6 @@ mod client {
     mod tests {
         use super::*;
         use ink_lang as ink;
-
         #[ink::test]
         fn update() {
             let mut state = Client::new(String::from("0x1"));
