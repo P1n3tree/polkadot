@@ -8,7 +8,12 @@ mod treasury {
 
     use client::ClientRef;
     use ink_env::call::FromAccountId;
+    use ink_env::*;
     use pdao_beacon_chain_common::*;
+    use parity_codec::{Decode, Encode};
+    use sp_runtime::AccountId32;
+    use rustc_hex::FromHex;
+    use bs58;
 
     #[ink(storage)]
     pub struct Treasury {
@@ -93,14 +98,22 @@ mod treasury {
         ) -> Result<()> {
             //let addr = "_message.receiver_address".as_str();
             let value = _message.amount as u128;
-
             assert!(value >= self.env().balance(), "insufficient balance!");
 
-            //must change string to AccountId
-            //let AccountId: T::AccountId = account;
-
-            let account = AccountId::from([0x01; 32]);
-            if self.env().transfer(account, value).is_err() {
+            let address_str = _message.receiver_address;
+            let mut output:Vec<u8>;
+            match bs58::decode(address_str).into(&mut output){
+                Ok(_res)=> (),
+                Err(_e)=> (),
+            };
+            let cut_address_vec:Vec<u8> = output.drain(1..33).collect();
+            let mut array = [0; 32];
+            let bytes = &cut_address_vec[..array.len()]; 
+            array.copy_from_slice(bytes); 
+            let account32: AccountId32 = array.into();
+            let mut to32 = AccountId32::as_ref(&account32);
+            let to_address : AccountId = AccountId::decode(&mut to32).unwrap_or_default();
+            if self.env().transfer(to_address, value).is_err() {
                 return Err(Error::FailToTransfer);
             };
             Ok(())
