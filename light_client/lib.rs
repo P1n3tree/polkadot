@@ -51,11 +51,12 @@ mod client {
             if false == LightClient::update(&mut state, header.clone(), proof) {
                 return Err(Error::UpdateError);
             };
-            self.height += 1;
-            self.last_header = header;
+            self.height = state.height;
+            self.last_header = state.last_header;
 
             Ok(())
         }
+        
         //invoked by treasury contract, verify txs
         #[ink(message)]
         pub fn verify_commitment(
@@ -75,6 +76,11 @@ mod client {
             };
             Ok(())
         }
+
+        #[ink(message)]
+        pub fn get_last_header (&self) -> Header {
+            return self.last_header.clone();
+        }
     }
 
     /// Unit tests
@@ -90,7 +96,9 @@ mod client {
             let proof = String::from("valid");
             state.update_light_client(header, proof);
             assert_eq!(state.last_header, String::from("0x2"));
+            assert_eq!(state.get_last_header(), String::from("0x2"));
         }
+
 
         #[ink::test]
         fn verify() {
@@ -102,12 +110,13 @@ mod client {
                 receiver_address: String::from("0x3"),
                 contract_sequence: 21,
             };
-            let proof = String::from("valid");
-            state.verify_commitment(
+            let proof :MerkleProof = String::from("valid");
+            let result = state.verify_commitment(
                 message::DeliverableMessage::FungibleTokenTransfer(msg),
-                1,
+                0,
                 proof,
             );
+            assert_eq!(result, Ok(()));
         }
     }
 }
