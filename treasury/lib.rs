@@ -25,14 +25,14 @@ mod treasury {
 
     pub type Result<T> = core::result::Result<T, Error>;
 
-    pub fn convert_string_to_accountid(account_str: &str)-> AccountId{
+    pub fn convert_string_to_accountid(account_str: &str) -> AccountId {
         let mut output = vec![0xFF; 35];
         bs58::decode(account_str).into(&mut output).unwrap();
-        let cut_address_vec:Vec<_> = output.drain(1..33).collect();
+        let cut_address_vec: Vec<_> = output.drain(1..33).collect();
         let mut array = [0; 32];
-        let bytes = &cut_address_vec[..array.len()]; 
+        let bytes = &cut_address_vec[..array.len()];
         array.copy_from_slice(bytes);
-        let accountId:AccountId = array.into();
+        let accountId: AccountId = array.into();
         accountId
     }
 
@@ -85,20 +85,19 @@ mod treasury {
                 message::DeliverableMessage::FungibleTokenTransfer(_message) => {
                     self.transfer_treasury_FT(_message, block_height, proof);
                 }
-                
+
                 message::DeliverableMessage::NonFungibleTokenTransfer(_message) => {
                     self.transfer_treasury_NFT(_message, block_height, proof);
                 }
                 message::DeliverableMessage::Custom(_message) => {
                     self.transfer_treasury_Custom(_message, block_height, proof);
                 }
-                
             }
             Err(Error::NoMatching)
         }
 
         //withdraw balance to valid account. trnasfer_token() calls this method
-        
+
         pub fn transfer_treasury_FT(
             &mut self,
             _message: message::FungibleTokenTransfer,
@@ -130,7 +129,6 @@ mod treasury {
         ) -> Result<()> {
             unimplemented!();
         }
-        
     }
 
     /// Unit tests

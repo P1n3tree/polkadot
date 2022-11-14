@@ -17,8 +17,8 @@ ink_lang = { version = "3", default-features = false }
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"]}
 scale-info = { version = "2", default-features = false, features = ["derive"], optional = true }
 
-pdao-colony-contract-common = { path="../../beacon-chain/contract-common", version = "0.1.2", features = ["polkadot"]}
-pdao-beacon-chain-common = { path="../../beacon-chain/common", version = "0.1.0", features = ["polkadot"] }
+pdao-colony-contract-common = { version = "0.1.2", features = ["polkadot"]}
+pdao-beacon-chain-common = { version = "0.1.0", features = ["polkadot"] }
 
 [lib]
 name = "client"
@@ -38,7 +38,9 @@ std = [
     "ink_env/std",
     "ink_storage/std",
     "ink_primitives/std",
+    "ink_lang/std",
     "scale/std",
     "scale-info/std",
 ]
+
 ink-as-dependency = []
